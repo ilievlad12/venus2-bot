@@ -92,7 +92,7 @@ async def update_leaderboard():
         description=f"⚔️ **Cei mai bogați jucători (singurii care au MD-uri înainte de deschidere)** ⚔️\n\n{lb_text}",
         color=0xF1C40F
     )
-    lb_embed.set_footer(text="Actualizat automat la fiecare pradă")
+    lb_embed.set_footer(text="Actualizat automat la fiecare BOSS UCIS")
     lb_embed.timestamp = discord.utils.utcnow()
 
     # --- 3. ACTUALIZARE MESAJE PE CANAL ---
@@ -176,7 +176,7 @@ class BossView(discord.ui.View):
                     amt = 150 if has_tag else 50
                     res += f"👤 {p.mention} ➔ **{amt} MD**\n"
                     await update_user_log(p, amt, self.boss_info['nume'])
-                embed.description = f"**PRADĂ EXTRASTRĂ:**\n{res}\n📜 *Clasamentul a fost actualizat.*"
+                embed.description = f"**DROP BOSS:**\n{res}\n📜 *Clasamentul a fost actualizat.*"
             else:
                 embed.description = f"Seful a murit, dar nu a dropat nimic"
             await interaction.response.edit_message(embed=embed, view=self)
