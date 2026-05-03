@@ -94,7 +94,7 @@ class BossView(discord.ui.View):
         info_text = (
             "🪙 **100 DC** ➔ Recompensă Standard\n"
             "💎 **300 DC** ➔ Recompensă VIP\n\n"
-            "💡 **Sfat:** Poartă tag-ul **[Venus2]** pentru recompensa VIP!"
+            "💡 **Sfat:** 𝐏𝐨𝐚𝐫𝐭ă 𝐭𝐚𝐠-𝐮𝐥 [𝐕𝐞𝐧𝐮𝐬𝟐] 𝐩𝐞𝐧𝐭𝐫𝐮 𝐄𝐗𝐓𝐑𝐀 𝐌𝐃-𝐔𝐑𝐈!!"
         )
         embed.add_field(name="📦 Informații Drop", value=info_text, inline=False)
         
