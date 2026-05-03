@@ -115,7 +115,7 @@ class BossCoopView(discord.ui.View):
             else:
                 embed_dead.description = (
                     f"Boss-ul a murit, dar buzunarele lui erau goale...\n"
-                    f"**Drop:** ❌ Eșuat"
+                    f"**Drop:** ❌ Eșuat, nu prea ai noroc azi.."
                 )
 
             embed_dead.add_field(
