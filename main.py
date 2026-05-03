@@ -36,7 +36,7 @@ async def metin(ctx):
         color=discord.Color.red()
     )
 
-    if drop_chance <= 70:
+    if drop_chance <= 30:
         embed.add_field(name="💰 Drop Information", 
                         value=f"• 🪙 **{dc_amount} DC** {'(Bonus tag Venus2)' if has_tag else '(Fără tag)'}", 
                         inline=False)
