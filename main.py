@@ -9,7 +9,7 @@ from threading import Thread
 app = Flask('')
 @app.route('/')
 def home():
-    return "Venus2 Bot este Online!"
+    return "Venus2 Bot este Online - Ediția Animată!"
 
 def run():
     app.run(host='0.0.0.0', port=8080)
@@ -44,13 +44,17 @@ class MetinView(discord.ui.View):
         button.style = discord.ButtonStyle.secondary
         button.emoji = "🪨"
 
-        # --- Embed Stare DISTRUSĂ ---
+        # --- Embed Stare DISTRUSĂ (VERDE) ---
         embed = discord.Embed(
             title="🏆 Piatra Metin a Venerei: Cucerită!",
-            color=0x2ECC71 # Verde
+            color=0x2ECC71 # Verde smarald
         )
         
-        embed.set_image(url="https://i.imgur.com/1CQSAMp.jpeg")
+        # Pune logoul în colț (Thumbnail)
+        embed.set_thumbnail(url=bot.user.display_avatar.url)
+        
+        # GIF-ul VERDE pentru distrugere
+        embed.set_image(url="https://i.imgur.com/N2wJjFl.gif")
 
         if drop_type == "dc":
             dc_amount = 300 if has_tag else 100
@@ -68,7 +72,7 @@ class MetinView(discord.ui.View):
                 f"❌ **Nimic...**"
             )
 
-        # Info Drop mult mai curat și explicit
+        # Informații Drop
         info_text = (
             "🪙 **100 DC** ➔ Recompensă Standard\n"
             "💎 **300 DC** ➔ Recompensă VIP\n\n"
@@ -88,7 +92,7 @@ class MetinView(discord.ui.View):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def metin(ctx):
-    # --- Embed Stare SPAWNATĂ ---
+    # --- Embed Stare SPAWNATĂ (PORTOCALIU) ---
     embed = discord.Embed(
         title="☄️ O Nouă Piatră Metin a Căzut!",
         description=(
@@ -96,10 +100,14 @@ async def metin(ctx):
             "O piatră misterioasă plină de comori s-a prăbușit pe server.\n\n"
             "**Fii rapid!** Primul care o distruge va lua tot drop-ul!"
         ),
-        color=0xFF4500 # Portocaliu
+        color=0xFF4500 # Portocaliu vibrant
     )
     
-    embed.set_image(url="https://i.imgur.com/prtUAjW.jpeg")
+    # GIF-ul PORTOCALIU pentru spawn
+    embed.set_image(url="https://i.imgur.com/UpwH6EW.gif")
+    
+    # Pune logoul în colț (Thumbnail)
+    embed.set_thumbnail(url=bot.user.display_avatar.url)
     
     view = MetinView()
     await ctx.send(embed=embed, view=view)
