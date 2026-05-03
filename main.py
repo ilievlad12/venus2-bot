@@ -10,7 +10,7 @@ from threading import Thread
 app = Flask('')
 @app.route('/')
 def home():
-    return "Venus2 Bot: Database Cumulative Fix Online!"
+    return "Venus2 Bot: Direct Spawn System Online!"
 
 def run():
     app.run(host='0.0.0.0', port=8080)
@@ -48,7 +48,6 @@ async def update_user_log(user, amount, source_name):
 
     found_msg = None
     async for message in channel.history(limit=100):
-        # Căutăm mesajul care conține ID-ul unic al jucătorului
         if message.author == bot.user and f"ID: {user.id}" in message.content:
             found_msg = message
             break
@@ -56,16 +55,10 @@ async def update_user_log(user, amount, source_name):
     timestamp = f"<t:{int(discord.utils.utcnow().timestamp())}:R>"
     
     if found_msg:
-        # Căutăm orice număr care e între ** ** și e urmat de DC
-        # Această metodă este mult mai sigură pentru adunare
+        # Regex blindat: caută orice cifră între steluțe urmată de DC
         match = re.search(r"\*\*(\d+)\*\* DC", found_msg.content)
-        
-        if match:
-            old_total = int(match.group(1))
-            new_total = old_total + amount
-        else:
-            # Dacă dintr-un motiv bizar nu găsește numărul, pornim de la suma actuală
-            new_total = amount
+        old_total = int(match.group(1)) if match else 0
+        new_total = old_total + amount
         
         new_content = (
             f"📊 **REGISTRUL VENUS2**\n"
@@ -76,7 +69,6 @@ async def update_user_log(user, amount, source_name):
         )
         await found_msg.edit(content=new_content)
     else:
-        # Mesaj nou dacă jucătorul nu există în registru
         new_content = (
             f"📊 **REGISTRUL VENUS2**\n"
             f"👤 **Războinic:** {user.mention} | (ID: {user.id})\n"
@@ -106,11 +98,12 @@ class BossView(discord.ui.View):
         self.current_hp -= 50
         if self.current_hp > 0:
             embed = discord.Embed(
-                title=f"👹 Căpetenie: {self.boss_info['nume']}", 
+                title=f"👹 Conflict: {self.boss_info['nume']}", 
                 color=0x2ECC71,
-                description=f"🛡️ **Luptători:** {', '.join([u.mention for u in self.participants])}\n\n**ENERGIE:**\n{create_hp_bar(self.current_hp, self.max_hp)}"
+                description=f"🛡️ **Luptători în asediu:** {', '.join([u.mention for u in self.participants])}\n\n**ENERGIA BESTIEI:**\n{create_hp_bar(self.current_hp, self.max_hp)}\n━━━━━━━━━━━━━━━━━━"
             )
             embed.set_image(url=self.boss_info['viu'])
+            embed.set_thumbnail(url=bot.user.display_avatar.url)
             await interaction.response.edit_message(embed=embed, view=self)
         else:
             self.stop()
@@ -118,10 +111,10 @@ class BossView(discord.ui.View):
             button.label = "Răpus!"
             
             drop = random.choices([True, False], weights=[25, 75], k=1)[0]
-            embed = discord.Embed(title=f"🏆 {self.boss_info['nume']} a fost răpus!", color=0xE74C3C)
+            embed = discord.Embed(title=f"🏆 {self.boss_info['nume']} a fost doborât!", color=0xE74C3C)
             embed.set_image(url=self.boss_info['mort'])
+            embed.set_thumbnail(url=bot.user.display_avatar.url)
             
-            # AFISARE PARTICIPANTI LA FINAL
             eroi_text = ", ".join([u.mention for u in self.participants])
 
             if drop:
@@ -130,11 +123,10 @@ class BossView(discord.ui.View):
                     has_tag = "[Venus2]" in p.display_name or any(r.name == "Venus2" for r in p.roles)
                     amt = 150 if has_tag else 50
                     res += f"👤 {p.mention} ➔ **{amt} DC**\n"
-                    # Aici facem adunarea în log-uri
                     await update_user_log(p, amt, self.boss_info['nume'])
                 
                 embed.description = (
-                    f"⚔️ **Eroi participanți:** {eroi_text}\n\n"
+                    f"⚔️ **Curajoșii care au luptat:** {eroi_text}\n\n"
                     f"**PRADĂ EXTRASTRĂ:**\n{res}\n"
                     f"📜 *Registrele regatului au fost actualizate.*"
                 )
@@ -143,11 +135,27 @@ class BossView(discord.ui.View):
             
             await interaction.response.edit_message(embed=embed, view=self)
 
-# --- COMENZI ADMIN ---
+# --- COMENZI ---
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def boss(ctx):
-    await ctx.send(embed=discord.Embed(title="👹 Căutând o căpetenie...", color=0x2ECC71), view=BossView(random.choice(BOSI_DATA)))
+    # Alegem boss-ul direct aici ca să-l afișăm imediat
+    boss_ales = random.choice(BOSI_DATA)
+    view = BossView(boss_ales)
+    
+    embed = discord.Embed(
+        title=f"👹 APARIȚIE: {boss_ales['nume']}",
+        description=(
+            f"O căpetenie fioroasă a apărut la porțile orașului! Se pot înscrie **2 războinici**.\n\n"
+            f"**ENERGIE:** {create_hp_bar(200, 200)}\n"
+            f"━━━━━━━━━━━━━━━━━━"
+        ),
+        color=0x2ECC71
+    )
+    embed.set_image(url=boss_ales['viu'])
+    embed.set_thumbnail(url=bot.user.display_avatar.url)
+    
+    await ctx.send(embed=embed, view=view)
 
 @bot.command()
 @commands.has_permissions(administrator=True)
@@ -155,7 +163,7 @@ async def resetlogs(ctx):
     channel = bot.get_channel(LOG_CHANNEL_ID)
     if channel:
         await channel.purge(limit=100)
-        await ctx.send("✅ Toate registrele au fost șterse!")
+        await ctx.send("✅ Registrele au fost resetate!")
 
 @bot.command()
 @commands.has_permissions(administrator=True)
