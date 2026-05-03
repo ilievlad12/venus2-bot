@@ -71,7 +71,7 @@ class BossCoopView(discord.ui.View):
 
         self.current_hp -= self.damage_per_hit
 
-        # BOSS VIU -> EMBED VERDE
+        # --- STARE BOSS VIU (VERDE) ---
         if self.current_hp > 0:
             embed = discord.Embed(
                 title=f"✧ CONFRUNTARE VIP: {self.boss_info['nume']} ✧",
@@ -80,13 +80,12 @@ class BossCoopView(discord.ui.View):
                     f"Eroi în luptă: {', '.join([u.mention for u in self.participants])}\n\n"
                     f"**HP Rămas:**"
                 ),
-                color=0x2ECC71 # VERDE (Viu)
+                color=0x2ECC71 
             )
             
-            # [CORECTAT]: Imaginea boss-ului acum e MARE (mijloc)
+            # Imaginea Boss (MARE)
             embed.set_image(url=self.boss_info['viu'])
-            
-            # [CORECTAT]: Imaginea cu V/Bara de HP acum e MICĂ (dreapta sus)
+            # Bara de HP (MICĂ - Sus)
             embed.set_thumbnail(url=get_hp_bar_link(self.current_hp, self.max_hp))
             
             info_text_viu = (
@@ -99,7 +98,7 @@ class BossCoopView(discord.ui.View):
             embed.set_footer(text=f"💥 Ultimul atac: {user.display_name} ➔ -50 HP", icon_url=bot.user.display_avatar.url)
             await interaction.response.edit_message(embed=embed, view=self)
         
-        # BOSS MORT -> EMBED ROȘU
+        # --- STARE BOSS MORT (ROȘU) ---
         else:
             button.disabled = True
             button.label = "Mort!"
@@ -110,3 +109,74 @@ class BossCoopView(discord.ui.View):
             embed_dead = discord.Embed(
                 title=f"✧ [VENUS2] VIP DEFEATED: {self.boss_info['nume']} ✧",
                 description=(
+                    f"✧ ------------------ ✧\n\n"
+                    f"**Rezultat Final:**"
+                ),
+                color=0xE74C3C 
+            )
+            
+            # Boss Mort (MARE)
+            embed_dead.set_image(url=self.boss_info['mort'])
+            # Bara de 0% (MICĂ - Sus)
+            embed_dead.set_thumbnail(url=HP_BAR_LINKS["0"])
+
+            if drop_occurs:
+                results_text = ""
+                for p in self.participants:
+                    has_tag = "[Venus2]" in p.display_name or any(role.name == "Venus2" for role in p.roles)
+                    share = 150 if has_tag else 50
+                    tag_status = "✨ (VIP)" if has_tag else ""
+                    results_text += f"👤 {p.mention} ➔ **Recompensă:** **{share} DC** {tag_status}\n"
+                
+                embed_dead.description += (
+                    f"\n\nBoss-ul a fost doborât și a lăsat o urmă de bogăție!\n\n"
+                    f"{results_text}"
+                )
+            else:
+                embed_dead.description += (
+                    f"\n\nEroii {', '.join([u.mention for u in self.participants])} l-au ucis,\n"
+                    f"dar acest boss nu avea niciun obiect de preț asupra lui.\n\n"
+                    f"**Drop:** ❌ Eșuat"
+                )
+
+            info_text_mort = (
+                f"✧ ------------------ ✧\n\n"
+                f"🪙 **50 DC** ➔ Cota Standard\n"
+                f"💎 **150 DC** ➔ Cota VIP\n\n"
+                f"💡 **CUM SĂ IEI COTĂ VIP (150 DC)?**\n"
+                f"*Poartă tag-ul **[Venus2]** în numele tău de server!*"
+            )
+            embed_dead.add_field(name="📦 Informații Drop", value=info_text_mort, inline=False)
+            
+            embed_dead.set_footer(text="Venus2 - Battle System Engine", icon_url=bot.user.display_avatar.url)
+            embed_dead.timestamp = discord.utils.utcnow()
+
+            await interaction.response.edit_message(embed=embed_dead, view=self)
+            self.stop()
+
+# --- COMANDA BOSS ---
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def boss(ctx):
+    boss_ales = random.choice(BOSI_DATA)
+    view = BossCoopView(boss_ales)
+
+    embed = discord.Embed(
+        title=f"✧ [VENUS2] BOSS APĂRUT: {boss_ales['nume']} ✧",
+        description=(
+            f"✧ ------------------ ✧\n\n"
+            f"Un dușman de temut terorizează serverul! Se pot înscrie **maxim 2 jucători**.\n\n"
+            f"**Pregătiți armele! Recompensa este aproape.**"
+        ),
+        color=0x2ECC71 
+    )
+    
+    # Boss Viu (MARE)
+    embed.set_image(url=boss_ales['viu'])
+    # Bara de 100% (MICĂ - Sus)
+    embed.set_thumbnail(url=HP_BAR_LINKS["100"])
+    
+    await ctx.send(embed=embed, view=view)
+
+keep_alive()
+bot.run(os.getenv('DISCORD_TOKEN'))
