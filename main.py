@@ -43,8 +43,8 @@ class BossCoopView(discord.ui.View):
     def __init__(self, boss_info):
         super().__init__(timeout=None)
         self.boss_info = boss_info
-        self.max_hp = 200 
-        self.current_hp = 200
+        self.max_hp = 100
+        self.current_hp = 100
         self.damage_per_hit = 50
         self.participants = [] # Lista cu userii care au dat hit
 
@@ -133,7 +133,7 @@ async def boss(ctx):
         title=f"⚠️ BOSS: {boss_ales['nume']}",
         description=(
             f"Un boss a apărut! Se pot înscrie **maxim 2 jucători**.\n\n"
-            f"**HP:** {create_hp_bar(200, 200)}\n"
+            f"**HP:** {create_hp_bar(100, 100)}\n"
             "Fiecare lovitură scade **50 HP**."
         ),
         color=0xFF4500
