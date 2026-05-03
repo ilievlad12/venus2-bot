@@ -77,7 +77,7 @@ class MetinView(discord.ui.View):
             "🪙 **100 DC** ➔ Recompensă Standard\n"
             "💎 **300 DC** ➔ Recompensă VIP\n\n"
             "💡 **Cum să iei recompensa VIP (300 DC)?**\n"
-            "*Schimbă-ți numele pe acest server (Click pe profil ➔ Edit Server Profile ➔ Nickname) și adaugă tag-ul **[Venus2]** în fața numelui tău!*"
+            "*Adaugă-ți tagul nostru pe acest server (Click pe profil ➔ Edit Server Profile ➔ Nickname) și adaugă tag-ul **[Venus2]** în fața numelui tău!*"
         )
         embed.add_field(name="📦 Informații Drop", value=info_text, inline=False)
         
