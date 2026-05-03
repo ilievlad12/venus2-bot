@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import random
+import os
 from flask import Flask
 from threading import Thread
 
@@ -36,7 +37,7 @@ async def metin(ctx):
 
     if drop_chance <= 70:
         embed.add_field(name="💰 Drop Information", 
-                        value=f"• 🪙 **{dc_amount} DC** {'(Bonus tag)' if has_tag else '(Fără tag)'}", 
+                        value=f"• 🪙 **{dc_amount} DC** {'(Bonus tag Venus2)' if has_tag else '(Fără tag)'}", 
                         inline=False)
     else:
         embed.add_field(name="❌ Drop Information", value="• ❌ **Nimic...**", inline=False)
@@ -44,4 +45,5 @@ async def metin(ctx):
     await ctx.send(embed=embed)
 
 keep_alive()
-bot.run('MTUwMDMwOTg2NzUxMDg5MDU4Nw.GAq2aB.3CxWUEIhX86jontgNvAkSc2CW19C9u9szWiSI8') # Șterge textul și pune codul tău secret de la pasul 1
+# Luăm token-ul din setările Render, nu din cod!
+bot.run(os.getenv('DISCORD_TOKEN'))
