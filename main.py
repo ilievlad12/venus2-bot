@@ -1,15 +1,15 @@
-import os
 import discord
 from discord.ext import commands
 import random
+import os
 from flask import Flask
 from threading import Thread
 
-# --- KEEP ALIVE (Să țină botul online pe Render) ---
+# --- KEEP ALIVE (Pentru Render) ---
 app = Flask('')
 @app.route('/')
 def home():
-    return "Venus2 Bot este Online și Arată Superb!"
+    return "Venus2 Bot este Online!"
 
 def run():
     app.run(host='0.0.0.0', port=8080)
@@ -26,7 +26,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 # --- CLASA PENTRU BUTON ---
 class MetinView(discord.ui.View):
     def __init__(self):
-        super().__init__(timeout=None) # Butonul nu expiră
+        super().__init__(timeout=None)
 
     @discord.ui.button(label="Distruge Piatra Metin", style=discord.ButtonStyle.danger, custom_id="distruge_metin", emoji="⚔️")
     async def distruge_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -44,60 +44,51 @@ class MetinView(discord.ui.View):
         button.style = discord.ButtonStyle.secondary
         button.emoji = "🪨"
 
-        # ==========================================
-        # [DESIGN NOU] Embed Stare DISTRUSĂ
-        # ==========================================
-        # Culoare: Verde Smarald (Emerald) pentru succes
+        # --- Embed Stare DISTRUSĂ ---
         embed = discord.Embed(
             title="🏆 Piatra Metin a Venerei: Cucerită!",
-            color=0x2ECC71 # Un verde rich, plăcut
+            color=0x2ECC71 # Verde
         )
         
-        # Adăugăm imaginea cu piatra spartă
-        embed.set_image(url="https://cdn.discordapp.com/attachments/1499014597686853785/1500325757048852511/destroyed.png?ex=69f806bf&is=69f6b53f&hm=ee6d62f9915f641fa06e5c3a34e4a11f3f878cf3c34e57baa5e7438d15363ebd&")
+        embed.set_image(url="https://i.imgur.com/1CQSAMp.jpeg")
 
         if drop_type == "dc":
             dc_amount = 300 if has_tag else 100
-            tag_bonus_text = "(Bonus Tag [Venus2] Detectat!)" if has_tag else "(Fără Tag, Recompensă Standard)"
+            tag_bonus_text = "✨ *(Bonus VIP Aplicat)*" if has_tag else ""
             
-            # Descriere frumos formatată
             embed.description = (
-                f"{user.mention} a demonstrat o forță incredibilă și a sfărâmat piatra!\n"
-                f"Din măruntaiele ei a țâșnit aur curat:\n\n"
-                f"💰 Drop: **`[ {dc_amount} DC ]`**\n"
-                f"> *{tag_bonus_text}*"
+                f"{user.mention} a demonstrat o forță incredibilă și a sfărâmat piatra!\n\n"
+                f"**Drop obținut:**\n"
+                f"🪙 **{dc_amount} DC** {tag_bonus_text}"
             )
         else:
             embed.description = (
-                f"{user.mention} a distrus Piatra Metin, dar aceasta a fost blestemată!\n"
-                f"Nu a eliberat nicio recompensă de data asta...\n\n"
-                f"❌ Drop: **`[ Nimic... ]`**"
+                f"{user.mention} a distrus Piatra Metin, dar aceasta a fost blestemată!\n\n"
+                f"**Drop obținut:**\n"
+                f"❌ **Nimic...**"
             )
 
-        # Câmp informativ curat, cu cod blocks pentru valorile cheie
+        # Info Drop mult mai curat și explicit
         info_text = (
-            f"• 🪙 Recompensă Standard: **`[ 100 DC ]`**\n"
-            f"• 🌟 Recompensă cu Tag: **`[ 300 DC ]`**\n"
-            f"> *Poartă tag-ul `[Venus2]` în nume sau rol pentru bonus.*"
+            "🪙 **100 DC** ➔ Recompensă Standard\n"
+            "💎 **300 DC** ➔ Recompensă VIP\n\n"
+            "💡 **Cum să iei recompensa VIP (300 DC)?**\n"
+            "*Schimbă-ți numele pe acest server (Click pe profil ➔ Edit Server Profile ➔ Nickname) și adaugă tag-ul **[Venus2]** în fața numelui tău!*"
         )
-        embed.add_field(name="📦 Informații Drop Potential", value=info_text, inline=False)
+        embed.add_field(name="📦 Informații Drop", value=info_text, inline=False)
         
-        # Footer cu Timestamp
+        # Footer
         embed.set_footer(text=f"Distrusă de {user.display_name}", icon_url=user.display_avatar.url)
         embed.timestamp = discord.utils.utcnow()
 
-        # Edităm mesajul
         await interaction.response.edit_message(embed=embed, view=self)
         self.stop()
 
 # --- COMANDA SPAWN ---
 @bot.command()
-@commands.has_permissions(administrator=True) # Doar adminii pot spawna piatra
+@commands.has_permissions(administrator=True)
 async def metin(ctx):
-    # ==========================================
-    # [DESIGN NOU] Embed Stare SPAWNATĂ
-    # ==========================================
-    # Culoare: Portocaliu Intens (OrangeRed) pentru pericol și acțiune
+    # --- Embed Stare SPAWNATĂ ---
     embed = discord.Embed(
         title="☄️ O Nouă Piatră Metin a Căzut!",
         description=(
@@ -105,18 +96,13 @@ async def metin(ctx):
             "O piatră misterioasă plină de comori s-a prăbușit pe server.\n\n"
             "**Fii rapid!** Primul care o distruge va lua tot drop-ul!"
         ),
-        color=0xFF4500 # Un portocaliu-roșu vibrant
+        color=0xFF4500 # Portocaliu
     )
     
-    # Adăugăm imaginea cu piatra întreagă (mare, în centru)
-    embed.set_image(url="https://cdn.discordapp.com/attachments/1499014597686853785/1500325793111216321/Dekorativer-Stein-264x450.png?ex=69f806c7&is=69f6b547&hm=252963a02d919fb85a9cc4befc301a5ade20364de0eb26a8131b7aab23b7a67e&")
-    
-    # Thumbnail mic în colț (opțional, folosesc avatarul botului)
-    embed.set_thumbnail(url=bot.user.display_avatar.url)
+    embed.set_image(url="https://i.imgur.com/prtUAjW.jpeg")
     
     view = MetinView()
     await ctx.send(embed=embed, view=view)
 
 keep_alive()
-# Luăm token-ul din setările Render, nu din cod!
 bot.run(os.getenv('DISCORD_TOKEN'))
