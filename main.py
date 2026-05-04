@@ -75,7 +75,7 @@ async def update_leaderboard():
     lb_title = "🏆 CLASAMENTUL CAMPIONILOR DE PE VENUS2 🏆"
     lb_embed = discord.Embed(
         title=lb_title,
-        description=f"⚔️ **Top Războinici (MD | Kill-uri | Damage)** ⚔️\n\n{lb_text}",
+        description=f"⚔️ **PERSOANELE DIN TOP (MD | Kill-uri | Damage)** ⚔️\n\n{lb_text}",
         color=0xF1C40F
     )
     lb_embed.set_footer(text="Statistici actualizate în timp real")
@@ -108,24 +108,24 @@ async def update_user_stats(user, add_md, add_kill, add_dmg, source_name):
     
     if found_msg:
         md_match = re.search(r"Suma Totală: \*\*(\d+)\*\* MD", found_msg.content)
-        kill_match = re.search(r"Bossi Doborâți: \*\*(\d+)\*\*", found_msg.content)
+        kill_match = re.search(r"Sefi Doborâți: \*\*(\d+)\*\*", found_msg.content)
         dmg_match = re.search(r"Damage Total: \*\*(\d+)\*\*", found_msg.content)
 
         new_md = (int(md_match.group(1)) if md_match else 0) + add_md
         new_kills = (int(kill_match.group(1)) if kill_match else 0) + add_kill
         new_dmg = (int(dmg_match.group(1)) if dmg_match else 0) + add_dmg
 
-        content = (f"📊 **REGISTRUL VENUS2**\n👤 **Războinic:** {user.mention} | (ID: {user.id})\n"
+        content = (f"📊 **REGISTRUL VENUS2**\n👤 **FARMER:** {user.mention} | (ID: {user.id})\n"
                    f"💰 Suma Totală: **{new_md}** MD\n"
-                   f"⚔️ Bossi Doborâți: **{new_kills}**\n"
+                   f"⚔️ Sefi Doborâți: **{new_kills}**\n"
                    f"💥 Damage Total: **{new_dmg}**\n"
                    f"━━━━━━━━━━━━━━━━━━\n"
                    f"📅 **Ultima victorie:** {source_name} ({ts})")
         await found_msg.edit(content=content)
     else:
-        content = (f"📊 **REGISTRUL VENUS2**\n👤 **Războinic:** {user.mention} | (ID: {user.id})\n"
+        content = (f"📊 **REGISTRUL VENUS2**\n👤 **FARMER:** {user.mention} | (ID: {user.id})\n"
                    f"💰 Suma Totală: **{add_md}** MD\n"
-                   f"⚔️ Bossi Doborâți: **{add_kill}**\n"
+                   f"⚔️ Sefi Doborâți: **{add_kill}**\n"
                    f"💥 Damage Total: **{add_dmg}**\n"
                    f"━━━━━━━━━━━━━━━━━━\n"
                    f"📅 **Prima victorie:** {source_name} ({ts})")
@@ -142,7 +142,7 @@ class BossView(discord.ui.View):
         self.current_hp = 200
         self.participants = {} # Stocăm: user -> damage_dat
 
-    @discord.ui.button(label="Atacă Bestia", style=discord.ButtonStyle.danger, emoji="⚔️")
+    @discord.ui.button(label="Atacă Seful", style=discord.ButtonStyle.danger, emoji="⚔️")
     async def ataca(self, interaction: discord.Interaction, button: discord.ui.Button):
         user = interaction.user
         
@@ -157,14 +157,14 @@ class BossView(discord.ui.View):
         if self.current_hp > 0:
             mentions = ", ".join([u.mention for u in self.participants.keys()])
             embed = discord.Embed(title=f"👹 Conflict: {self.boss_info['nume']}", color=0x2ECC71,
-                                description=f"🛡️ **Luptători:** {mentions}\n\n**ENERGIE:**\n{create_hp_bar(self.current_hp, self.max_hp)}")
+                                description=f"🛡️ **Farmeri:** {mentions}\n\n**ENERGIE:**\n{create_hp_bar(self.current_hp, self.max_hp)}")
             embed.set_image(url=self.boss_info['viu'])
             await interaction.response.edit_message(embed=embed, view=self)
         else:
             self.stop()
-            button.disabled, button.label = True, "Răpus!"
+            button.disabled, button.label = True, "BOSS UCIS!"
             drop = random.choices([True, False], weights=[25, 75], k=1)[0]
-            embed = discord.Embed(title=f"🏆 {self.boss_info['nume']} a fost doborât!", color=0xE74C3C)
+            embed = discord.Embed(title=f"🏆 {self.boss_info['nume']} a fost ucis!", color=0xE74C3C)
             embed.set_image(url=self.boss_info['mort'])
             
             mentions = ", ".join([u.mention for u in self.participants.keys()])
@@ -176,12 +176,12 @@ class BossView(discord.ui.View):
                     res += f"👤 {p.mention} ➔ **{amt} MD** (Damage: {dmg})\n"
                     # Trimitem datele: MD, 1 kill, dmg dat
                     await update_user_stats(p, amt, 1, dmg, self.boss_info['nume'])
-                embed.description = f"⚔️ **Eroi:** {mentions}\n\n**PRADĂ:**\n{res}📜 *Statistici actualizate!*"
+                embed.description = f"⚔️ **Eroi:** {mentions}\n\n**DROP:**\n{res}📜 *Statistici actualizate!*"
             else:
                 # Chiar dacă nu e drop, adăugăm kill-ul și damage-ul
                 for p, dmg in self.participants.items():
                     await update_user_stats(p, 0, 1, dmg, self.boss_info['nume'])
-                embed.description = f"⚔️ **Eroi:** {mentions}\n\nBestia a murit, dar prada s-a irosit..."
+                embed.description = f"⚔️ **Eroi:** {mentions}\n\nSeful a murit, dar nu a dropat nimic..."
             
             await interaction.response.edit_message(embed=embed, view=self)
 
@@ -197,7 +197,7 @@ def create_hp_bar(current, maximum):
 async def boss(ctx):
     boss_ales = random.choice(BOSI_DATA)
     embed = discord.Embed(title=f"👹 APARIȚIE: {boss_ales['nume']}", color=0x2ECC71,
-                        description=f"Se pot înscrie **2 războinici**.\n\n**ENERGIE:** {create_hp_bar(200, 200)}")
+                        description=f"Se pot înscrie **2 farmeri**.\n\n**HP RAMAS:** {create_hp_bar(200, 200)}")
     embed.set_image(url=boss_ales['viu'])
     await ctx.send(embed=embed, view=BossView(boss_ales))
 
