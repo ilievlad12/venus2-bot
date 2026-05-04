@@ -157,7 +157,7 @@ class BossView(discord.ui.View):
         if self.current_hp > 0:
             mentions = ", ".join([u.mention for u in self.participants.keys()])
             embed = discord.Embed(title=f"👹 Conflict: {self.boss_info['nume']}", color=0x2ECC71,
-                                description=f"🛡️ **Farmeri:** {mentions}\n\n**ENERGIE:**\n{create_hp_bar(self.current_hp, self.max_hp)}")
+                                description=f"🛡️ **Farmeri:** {mentions}\n\n**HP RAMAS:**\n{create_hp_bar(self.current_hp, self.max_hp)}")
             embed.set_image(url=self.boss_info['viu'])
             await interaction.response.edit_message(embed=embed, view=self)
         else:
@@ -181,7 +181,7 @@ class BossView(discord.ui.View):
                 # Chiar dacă nu e drop, adăugăm kill-ul și damage-ul
                 for p, dmg in self.participants.items():
                     await update_user_stats(p, 0, 1, dmg, self.boss_info['nume'])
-                embed.description = f"⚔️ **Eroi:** {mentions}\n\nSeful a murit, dar nu a dropat nimic..."
+                embed.description = f"⚔️ **Cine a participat la ucidere:** {mentions}\n\nSeful a murit, dar nu a dropat nimic..."
             
             await interaction.response.edit_message(embed=embed, view=self)
 
