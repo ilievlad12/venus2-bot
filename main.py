@@ -66,7 +66,7 @@ async def update_leaderboard():
     for i, p in enumerate(players[:10]):
         emoji = medals[i] if i < 3 else "🎖️"
         lb_text += (f"{emoji} **Locul {i+1}:** <@{p['id']}>\n"
-                   f"╰ MD: **{p['md']}** | ⚔️ **{p['kills']}** | 💥 **{p['dmg']}**\n")
+                   f"╰ MD: **{p['md']}** | SEFI UCISI: **{p['kills']}** | DMG: **{p['dmg']}**\n")
     
     if not players:
         lb_text += "*Niciun războinic nu a colectat date încă...*"
